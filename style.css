@@ -1,0 +1,215 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+
+body {
+    font-family: Arial, sans-serif;
+    /* margin: 0;
+    padding: 0; */
+    background-color: #212121 !important;
+    color: #212529;
+    box-sizing: border-box;
+}
+
+/* .col{
+    width: 24% !important;
+} */
+
+/* Container for scratch cards */
+/* .container {
+    margin-top: 20px;
+} */
+
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Reveal container styles */
+.reveal-container {
+    position: relative;
+    display: flex;
+    justify-content: space-evenly !important;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vw;
+    max-width: 200px;
+    max-height: 200px;
+    /* width: 200px;
+    height: 200px; */
+    /* padding: 20px; */
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #ddd;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 615px) {
+    /* @media (max-width: 1200px) { */
+    .reveal-container {
+        width: 100vw;
+        height: 100vw;
+        max-width: 100px;
+        max-height: 100px;
+    }
+    
+}
+
+/* Hidden image styling */
+.hidden-image {
+    /* position: absolute;
+    top: 0;
+    left: 0; */
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    object-fit: contain;
+    pointer-events: none;
+    background: #fff !important;
+}
+
+.reveal-container:hover .hidden-image {
+    object-fit: cover;
+    /* scale: 1.2; */
+}
+
+
+
+.image-name {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    bottom: 15%;
+    position: absolute;
+    /* border: 1px solid rgba(65, 65, 65, 0.493); */
+    border-radius: 8px;
+    background-color: transparent;
+    /* backdrop-filter: blur(2px); */
+    word-wrap: break-word;
+}
+
+
+
+.toggle-container {
+    /* margin: 20px 0; */
+    text-align: center;
+    font-size: 16px;
+}
+
+label {
+    font-size: 16px;
+    color: #007bff;
+}
+
+input[type="checkbox"] {
+    margin-left: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.reset-btn-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.reset-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.reset-btn:hover {
+    background-color: #ff2222;
+}
+
+
+.multiMenu {
+    position: fixed !important;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.multiMenu .dropdown-toggle::after {
+    display: none;
+}
+
+.multiMenu .dropdown-toggle {
+    height: 50px;
+    width: 50px;
+    font-size: larger;
+    border-radius: 50%;
+}
+
+.multiMenuList .bi {
+    margin-right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+text {
+    font-family: Arial, sans-serif;
+    fill: white;
+    /* Text color */
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.text-background {
+    fill: rgba(0, 0, 0, 0.6);
+    /* Background color for text */
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border-radius: 50%;
+}
