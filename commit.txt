@@ -1,6 +1,9 @@
-git add 'commit.txt'
+git status
+git add 'commit.txt' or git add .
 git commit --date='2025-01-12 02:00:00' -m 'commit in 17th january'
+git commit --date "2025-01-12 12:00:00 +0530" -m "commit in 12th january"
+git push origin main
 git push origin master
 -01-17-4 01-18-718
 try to commit
-6606
+6603
