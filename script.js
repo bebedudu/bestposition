@@ -45,9 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
 let currentCardIndex = null;
 let modalScratchInitialized = false;
 let isZoomed = false;
-let zoomScale = 2.5;
-let zoomOriginX = 0;
-let zoomOriginY = 0;
+let zoomScale = 1;
+let minZoom = 1;
+let maxZoom = 4;
+let zoomStep = 0.2;
+let zoomOriginX = 50;
+let zoomOriginY = 50;
 
 // Initialize scratch card logic for each container
 function initializeScratchCard(container, isModal = false) {
@@ -331,9 +334,11 @@ function enableZoomFunctionality() {
     
     // Remove any existing zoom event listeners
     modalHiddenImage.removeEventListener('click', handleImageZoom);
+    modalContainer.removeEventListener('wheel', handleWheelZoom);
     
-    // Add zoom event listener
+    // Add zoom event listeners
     modalHiddenImage.addEventListener('click', handleImageZoom);
+    modalContainer.addEventListener('wheel', handleWheelZoom, { passive: false });
     
     // Add zoomable class and change cursor to indicate zoom is available
     modalHiddenImage.classList.add('zoomable');
@@ -349,58 +354,105 @@ function enableZoomFunctionality() {
     }
 }
 
-function handleImageZoom(event) {
+// Handle mouse wheel zoom
+function handleWheelZoom(event) {
+    event.preventDefault();
     event.stopPropagation();
     
-    console.log('Image zoom clicked, isZoomed:', isZoomed); // Debug log
+    if (!modalHiddenImage.classList.contains('zoomable') && !modalHiddenImage.classList.contains('zoomed')) {
+        return;
+    }
     
-    if (!isZoomed) {
-        // Zoom in
-        const rect = modalHiddenImage.getBoundingClientRect();
-        const containerRect = modalContainer.getBoundingClientRect();
-        
-        // Calculate click position relative to the image
-        const clickX = event.clientX - rect.left;
-        const clickY = event.clientY - rect.top;
-        
-        // Calculate zoom origin as percentage
-        zoomOriginX = (clickX / rect.width) * 100;
-        zoomOriginY = (clickY / rect.height) * 100;
-        
-        // Apply zoom
-        modalHiddenImage.style.transform = `scale(${zoomScale})`;
-        modalHiddenImage.style.transformOrigin = `${zoomOriginX}% ${zoomOriginY}%`;
+    // Get mouse position relative to the image
+    const rect = modalHiddenImage.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    
+    // Calculate zoom origin as percentage
+    zoomOriginX = (mouseX / rect.width) * 100;
+    zoomOriginY = (mouseY / rect.height) * 100;
+    
+    // Determine zoom direction
+    const delta = event.deltaY || event.detail || event.wheelDelta;
+    const zoomIn = delta < 0;
+    
+    // Calculate new zoom scale
+    let newZoomScale = zoomScale;
+    if (zoomIn) {
+        newZoomScale = Math.min(maxZoom, zoomScale + zoomStep);
+    } else {
+        newZoomScale = Math.max(minZoom, zoomScale - zoomStep);
+    }
+    
+    // Apply zoom
+    applyZoom(newZoomScale, zoomOriginX, zoomOriginY);
+    
+    console.log('Wheel zoom:', newZoomScale.toFixed(1) + 'x');
+}
+
+// Apply zoom with given scale and origin
+function applyZoom(scale, originX, originY) {
+    zoomScale = scale;
+    zoomOriginX = originX;
+    zoomOriginY = originY;
+    
+    modalHiddenImage.style.transform = `scale(${scale})`;
+    modalHiddenImage.style.transformOrigin = `${originX}% ${originY}%`;
+    
+    // Update classes and cursor based on zoom level
+    if (scale > minZoom) {
+        isZoomed = true;
+        modalContainer.classList.add('zoomed');
+        modalHiddenImage.classList.remove('zoomable');
+        modalHiddenImage.classList.add('zoomed');
         
         // Set zoom-out cursor with fallbacks
         const zoomOutCursors = ['zoom-out', '-webkit-zoom-out', '-moz-zoom-out', 'pointer'];
         for (let cursor of zoomOutCursors) {
             modalHiddenImage.style.cursor = cursor;
             if (getComputedStyle(modalHiddenImage).cursor === cursor) {
-                console.log('Using zoom-out cursor:', cursor);
                 break;
             }
         }
-        
-        // Add zoom classes for additional styling
-        modalContainer.classList.add('zoomed');
-        modalHiddenImage.classList.remove('zoomable');
-        modalHiddenImage.classList.add('zoomed');
-        
-        isZoomed = true;
     } else {
-        // Zoom out
-        modalHiddenImage.style.transform = 'scale(1)';
-        modalHiddenImage.style.transformOrigin = 'center center';
+        isZoomed = false;
+        modalContainer.classList.remove('zoomed');
+        modalHiddenImage.classList.remove('zoomed');
+        modalHiddenImage.classList.add('zoomable');
         
         // Set zoom-in cursor with fallbacks
         const zoomInCursors = ['zoom-in', '-webkit-zoom-in', '-moz-zoom-in', 'pointer'];
         for (let cursor of zoomInCursors) {
             modalHiddenImage.style.cursor = cursor;
             if (getComputedStyle(modalHiddenImage).cursor === cursor) {
-                console.log('Using zoom-in cursor:', cursor);
                 break;
             }
         }
+    }
+}
+
+function handleImageZoom(event) {
+    event.stopPropagation();
+    
+    console.log('Image zoom clicked, isZoomed:', isZoomed); // Debug log
+    
+    if (!isZoomed) {
+        // Zoom in to 2.5x
+        const rect = modalHiddenImage.getBoundingClientRect();
+        
+        // Calculate click position relative to the image
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+        
+        // Calculate zoom origin as percentage
+        const originX = (clickX / rect.width) * 100;
+        const originY = (clickY / rect.height) * 100;
+        
+        // Apply zoom
+        applyZoom(2.5, originX, originY);
+    } else {
+        // Zoom out to normal size
+        applyZoom(1, 50, 50);
         
         // Remove zoom classes and add zoomable class back
         modalContainer.classList.remove('zoomed');
@@ -422,8 +474,13 @@ function resetZoom() {
     
     if (modalContainer) {
         modalContainer.classList.remove('zoomed');
+        modalContainer.removeEventListener('wheel', handleWheelZoom);
     }
     
+    // Reset zoom variables
+    zoomScale = 1;
+    zoomOriginX = 50;
+    zoomOriginY = 50;
     isZoomed = false;
 }
 
