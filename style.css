@@ -206,7 +206,8 @@ body {
 }
 
 .reveal-container:hover .hidden-image {
-    /* object-fit: cover; */
+    /* add hover effect */
+    /* object-fit: cover; */ 
     /* scale: 1.2; */
 }
 
