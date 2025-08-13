@@ -15,11 +15,9 @@
     <!-- Provide a brief description of your page -->
     <meta name="description"
         content="Scratch the card for the best position. This tool helps you to find the best position for your content.">
-    <meta name="search.description"
-        content="best position life scratch cards web-development front-end development">
+    <meta name="search.description" content="best position life scratch cards web-development front-end development">
     <!-- Specify keywords related to your content -->
-    <meta name="keywords"
-        content="best position life scratch cards web-development front-end development">
+    <meta name="keywords" content="best position life scratch cards web-development front-end development">
     <!-- Define the author of the page -->
     <meta name="author" content="bebe-dudu">
     <!-- Define the language of the content -->
@@ -54,25 +52,28 @@
     <div class="m-0 p-0 mt-5">
         <div class="row row-cols-auto row-cols-lg-auto g-2 g-lg-auto">
             <!-- <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3"> -->
-            <div class="col">
-                <div class="reveal-container" data-id="5000">
-                    <img src="images/69-bridge.jpg" alt="Hidden Image" class="hidden-image">
-                    <svg viewBox="0 0 300 300">
-                        <defs>
-                            <!-- Arc adjusted for the bottom side -->
-                            <path id="bottomCurve" d="M 0,150 A 75,75 0 0,0 300,150" />
-                        </defs>
-                        <!-- Background for text -->
-                        <path class="text-background" d="M 0,150 A 75,75 0 0,0 300,150" stroke="none" stroke-width="0"
-                            fill="rgba(0,0,0,0.6)" />
-                        <!-- Circular text -->
-                        <text dy="-5">
-                            <textPath xlink:href="#bottomCurve" startOffset="50%" text-anchor="middle">
-                                Helpful Tools
-                            </textPath>
-                        </text>
-                    </svg>
-                    <canvas></canvas>
+
+        </div>
+    </div>
+
+    <!-- Scratch Modal -->
+    <div class="modal fade" id="scratchModal" tabindex="-1" aria-labelledby="scratchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scratchModalLabel">Scratch to Reveal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="modalScratchContainer" class="reveal-container modal-scratch-container">
+                        <img id="modalHiddenImage" src="" alt="Hidden Image" class="hidden-image">
+                        <span id="modalImageName" class="image-name"></span>
+                        <div class="scratch-instruction">
+                            <i class="bi bi-hand-index"></i><br>
+                            Scratch to reveal
+                        </div>
+                        <canvas id="modalCanvas"></canvas>
+                    </div>
                 </div>
             </div>
         </div>

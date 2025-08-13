@@ -51,9 +51,61 @@ body {
     border: 5px solid #ddd;
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.reveal-container:hover {
+    transform: scale(1.05);
+}
+
+/* Modal scratch container styles */
+.modal-scratch-container {
+    width: 400px;
+    height: 400px;
+    max-width: 90vw;
+    max-height: 90vw;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 2px solid #444;
+    background: #1a1a1a;
+}
+
+.modal-scratch-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #007bff, #0056b3, #007bff, #0056b3);
+    border-radius: 22px;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.modal-scratch-container:hover::before {
+    animation-duration: 1.5s;
 }
 
 @media screen and (max-width: 615px) {
+
     /* @media (max-width: 1200px) { */
     .reveal-container {
         width: 100vw;
@@ -61,14 +113,29 @@ body {
         max-width: 100px;
         max-height: 100px;
     }
-    
+
+    /* Mobile modal adjustments */
+    .modal-scratch-container {
+        width: 300px;
+        height: 300px;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .modal-scratch-container .image-name {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
 }
 
 /* Hidden image styling */
 .hidden-image {
-    /* position: absolute;
-    top: 0;
-    left: 0; */
     width: 100%;
     height: 100%;
     opacity: 1;
@@ -78,8 +145,68 @@ body {
     background: #fff !important;
 }
 
+/* Grid items - hide images behind scratch layer */
+.reveal-container:not(.modal-scratch-container) .hidden-image {
+    opacity: 0;
+}
+
+/* Modal hidden image styling */
+.modal-scratch-container .hidden-image {
+    opacity: 0;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center center;
+}
+
+/* Zoom functionality */
+.modal-scratch-container .hidden-image.zoomable {
+    cursor: zoom-in;
+}
+
+.modal-scratch-container .hidden-image.zoomed {
+    transform: scale(2.5);
+    cursor: zoom-out;
+    z-index: 20;
+}
+
+.modal-scratch-container.zoom-active {
+    overflow: visible;
+}
+
+.modal-scratch-container.zoom-active .hidden-image.zoomed {
+    position: relative;
+    z-index: 25;
+}
+
+.modal {
+    background: radial-gradient(#292626, #000000c4);
+}
+
+/* Modal image name styling */
+.modal-scratch-container .image-name {
+    opacity: 0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    z-index: 9;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(0, 86, 179, 0.2));
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.modal-scratch-container .image-name.revealed {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
 .reveal-container:hover .hidden-image {
-    object-fit: cover;
+    /* object-fit: cover; */
     /* scale: 1.2; */
 }
 
@@ -97,6 +224,9 @@ body {
     background-color: transparent;
     /* backdrop-filter: blur(2px); */
     word-wrap: break-word;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 
@@ -212,4 +342,178 @@ canvas {
     height: 100%;
     cursor: pointer;
     border-radius: 50%;
+    z-index: 10;
+}
+
+/* Modal canvas specific styling */
+.modal-scratch-container canvas {
+    border-radius: 20px;
+    cursor: crosshair;
+    transition: all 0.3s ease;
+}
+
+.modal-scratch-container canvas:hover {
+    filter: brightness(1.1);
+}
+
+/* Modal specific styles */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+    border: 1px solid #444;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(90deg, #333, #2a2a2a);
+    border-bottom: 1px solid #555;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #007bff, #0056b3, #007bff);
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.modal-title {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.4rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+
+.btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-close:hover {
+    opacity: 1;
+    /* background: rgba(255, 255, 255, 0.2); */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.btn-close:active {
+    transform: scale(0.95);
+}
+
+.modal-body {
+    background: #212121;
+    padding: 2rem;
+    position: relative;
+}
+
+.modal-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #555, transparent);
+}
+
+/* Modal entrance animation */
+.modal.fade .modal-dialog {
+    transform: scale(0.8) translateY(-50px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+/* Scratch instruction text */
+.scratch-instruction {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    z-index: 12;
+    pointer-events: none;
+    opacity: 0.7;
+    animation: pulse 2s ease-in-out infinite;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+}
+
+.scratch-instruction.hidden {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Loading shimmer effect */
+.modal-scratch-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmerLoad 1.5s ease-in-out;
+    z-index: 20;
+}
+
+@keyframes shimmerLoad {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
 }
