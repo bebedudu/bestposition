@@ -55,6 +55,11 @@ body {
     transition: transform 0.2s ease;
 }
 
+/* Override cursor for modal scratch container */
+.reveal-container.modal-scratch-container {
+    cursor: default;
+}
+
 .reveal-container:hover {
     transform: scale(1.05);
 }
@@ -73,6 +78,7 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border: 2px solid #444;
     background: #1a1a1a;
+    cursor: default;
 }
 
 .modal-scratch-container::before {
@@ -114,10 +120,19 @@ body {
         max-height: 100px;
     }
 
-    /* Mobile modal adjustments */
+    /* Mobile modal adjustments - Make it much larger */
+    .modal-dialog {
+        max-width: 95vw !important;
+        margin: 0.5rem !important;
+    }
+
     .modal-scratch-container {
-        width: 300px;
-        height: 300px;
+        width: 85vw;
+        height: 85vw;
+        max-width: 450px;
+        max-height: 450px;
+        min-width: 320px;
+        min-height: 320px;
     }
 
     .modal-body {
@@ -129,8 +144,47 @@ body {
     }
 
     .modal-scratch-container .image-name {
-        font-size: 14px;
-        padding: 6px 12px;
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+
+    /* Larger scratch instruction for mobile */
+    .scratch-instruction {
+        font-size: 16px;
+    }
+
+    /* Better touch targets */
+    .btn-close {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Full-screen modal on very small screens */
+    @media screen and (max-width: 480px) {
+        .modal-dialog {
+            max-width: 100vw !important;
+            margin: 0 !important;
+            height: 100vh;
+        }
+
+        .modal-content {
+            height: 100vh;
+            border-radius: 0;
+        }
+
+        .modal-scratch-container {
+            width: 90vw;
+            height: 60vh;
+            max-width: none;
+            max-height: none;
+        }
+
+        .modal-body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
     }
 }
 
@@ -153,7 +207,7 @@ body {
 /* Modal hidden image styling */
 .modal-scratch-container .hidden-image {
     opacity: 0;
-    cursor: pointer;
+    cursor: default;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform-origin: center center;
 }
@@ -161,12 +215,20 @@ body {
 /* Zoom functionality */
 .modal-scratch-container .hidden-image.zoomable {
     cursor: zoom-in;
+    cursor: -webkit-zoom-in;
+    cursor: -moz-zoom-in;
+    cursor: pointer;
+    pointer-events: auto !important;
 }
 
 .modal-scratch-container .hidden-image.zoomed {
     transform: scale(2.5);
     cursor: zoom-out;
+    cursor: -webkit-zoom-out;
+    cursor: -moz-zoom-out;
+    cursor: pointer;
     z-index: 20;
+    pointer-events: auto !important;
 }
 
 .modal-scratch-container.zoom-active {
@@ -207,7 +269,7 @@ body {
 
 .reveal-container:hover .hidden-image {
     /* add hover effect */
-    /* object-fit: cover; */ 
+    /* object-fit: cover; */
     /* scale: 1.2; */
 }
 
@@ -351,10 +413,20 @@ canvas {
     border-radius: 20px;
     cursor: crosshair;
     transition: all 0.3s ease;
+    touch-action: none;
+    /* Prevent scrolling while scratching */
 }
 
 .modal-scratch-container canvas:hover {
     filter: brightness(1.1);
+}
+
+/* Mobile-specific canvas improvements */
+@media screen and (max-width: 615px) {
+    .modal-scratch-container canvas {
+        cursor: pointer;
+        /* Better for touch devices */
+    }
 }
 
 /* Modal specific styles */

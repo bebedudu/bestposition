@@ -87,6 +87,19 @@ function initializeScratchCard(container, isModal = false) {
                         scratchInstruction.style.opacity = 0;
                         scratchInstruction.style.display = 'none';
                     }
+                    
+                    // Check if card is fully revealed and enable zoom if needed
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const pixels = imageData.data;
+                    let transparentPixels = 0;
+                    for (let i = 3; i < pixels.length; i += 4) {
+                        if (pixels[i] === 0) transparentPixels++;
+                    }
+                    const percentage = (transparentPixels / (pixels.length / 4)) * 100;
+                    
+                    if (percentage >= threshold && isModal) {
+                        enableZoomFunctionality();
+                    }
                 };
                 image.src = savedImageData;
             } else {
@@ -151,7 +164,12 @@ function initializeScratchCard(container, isModal = false) {
 
         ctx.globalCompositeOperation = 'destination-out'; // Erase mode
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2, false); // Circular erase
+        
+        // Use larger scratch radius on mobile devices
+        const isMobile = window.innerWidth <= 615;
+        const scratchRadius = isMobile ? 35 : 20;
+        
+        ctx.arc(pos.x, pos.y, scratchRadius, 0, Math.PI * 2, false); // Circular erase
         ctx.fill();
         checkScratchProgress();
     }
@@ -309,18 +327,32 @@ function openScratchModal(cardIndex, imageSrc, imageName) {
 function enableZoomFunctionality() {
     if (!modalHiddenImage) return;
     
+    console.log('Enabling zoom functionality'); // Debug log
+    
     // Remove any existing zoom event listeners
     modalHiddenImage.removeEventListener('click', handleImageZoom);
     
     // Add zoom event listener
     modalHiddenImage.addEventListener('click', handleImageZoom);
     
-    // Change cursor to indicate zoom is available
-    modalHiddenImage.style.cursor = 'zoom-in';
+    // Add zoomable class and change cursor to indicate zoom is available
+    modalHiddenImage.classList.add('zoomable');
+    
+    // Try different cursor values with fallbacks
+    const cursors = ['zoom-in', '-webkit-zoom-in', '-moz-zoom-in', 'pointer'];
+    for (let cursor of cursors) {
+        modalHiddenImage.style.cursor = cursor;
+        if (getComputedStyle(modalHiddenImage).cursor === cursor) {
+            console.log('Using cursor:', cursor);
+            break;
+        }
+    }
 }
 
 function handleImageZoom(event) {
     event.stopPropagation();
+    
+    console.log('Image zoom clicked, isZoomed:', isZoomed); // Debug log
     
     if (!isZoomed) {
         // Zoom in
@@ -338,20 +370,42 @@ function handleImageZoom(event) {
         // Apply zoom
         modalHiddenImage.style.transform = `scale(${zoomScale})`;
         modalHiddenImage.style.transformOrigin = `${zoomOriginX}% ${zoomOriginY}%`;
-        modalHiddenImage.style.cursor = 'zoom-out';
         
-        // Add zoom class for additional styling
+        // Set zoom-out cursor with fallbacks
+        const zoomOutCursors = ['zoom-out', '-webkit-zoom-out', '-moz-zoom-out', 'pointer'];
+        for (let cursor of zoomOutCursors) {
+            modalHiddenImage.style.cursor = cursor;
+            if (getComputedStyle(modalHiddenImage).cursor === cursor) {
+                console.log('Using zoom-out cursor:', cursor);
+                break;
+            }
+        }
+        
+        // Add zoom classes for additional styling
         modalContainer.classList.add('zoomed');
+        modalHiddenImage.classList.remove('zoomable');
+        modalHiddenImage.classList.add('zoomed');
         
         isZoomed = true;
     } else {
         // Zoom out
         modalHiddenImage.style.transform = 'scale(1)';
         modalHiddenImage.style.transformOrigin = 'center center';
-        modalHiddenImage.style.cursor = 'zoom-in';
         
-        // Remove zoom class
+        // Set zoom-in cursor with fallbacks
+        const zoomInCursors = ['zoom-in', '-webkit-zoom-in', '-moz-zoom-in', 'pointer'];
+        for (let cursor of zoomInCursors) {
+            modalHiddenImage.style.cursor = cursor;
+            if (getComputedStyle(modalHiddenImage).cursor === cursor) {
+                console.log('Using zoom-in cursor:', cursor);
+                break;
+            }
+        }
+        
+        // Remove zoom classes and add zoomable class back
         modalContainer.classList.remove('zoomed');
+        modalHiddenImage.classList.remove('zoomed');
+        modalHiddenImage.classList.add('zoomable');
         
         isZoomed = false;
     }
@@ -362,6 +416,7 @@ function resetZoom() {
         modalHiddenImage.style.transform = 'scale(1)';
         modalHiddenImage.style.transformOrigin = 'center center';
         modalHiddenImage.style.cursor = 'default';
+        modalHiddenImage.classList.remove('zoomable', 'zoomed');
         modalHiddenImage.removeEventListener('click', handleImageZoom);
     }
     
